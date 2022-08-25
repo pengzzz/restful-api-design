@@ -1,0 +1,133 @@
+openapi: "3.0.3"
+info:
+  version: 1.0.0
+  title: RESTful API Design - Customer
+  description: RESTful API Design - Workshop 2
+servers:
+  - url: http://localhost:3000
+    description: Development Server
+  - url: http://localhost:8080
+    description: Reverse Proxy Server
+paths:
+  /customers:
+    get:
+      description: |
+        Returns customers url 
+      operationId: getAllCustomers
+      parameters:
+        - name: offset
+          in: query
+          description: start index of returning row
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: customer url response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /customer:
+    post:
+      description: Creates a new customer
+      operationId: addCustomer
+      requestBody:
+        description: Customer to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        201:
+          description: New customer added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerAdded'
+        400:
+          description: Cannot provide customerId for inserts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /customer/{custId}:
+    get:
+      description: Get Customer Record By Customer ID
+      operationId: getCustomerByCustomerId
+      parameters:
+        - name: custId
+          in: path
+          description: ID of customer to fetch
+          required: true
+          schema:
+            type: number
+            format: int32
+            minimum: 100
+      responses:
+        200:
+          description: return customer record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        404:
+          description: cannot find customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Customer:
+      type: object
+      required:
+        - name  
+        - email
+      properties:
+        customerId:
+          type: number
+          format: int32
+          minimum: 100
+        name:
+          type: string  
+        email:
+          type: string
+          format: email
+    CustomerAdded:
+      type: object
+      properties:
+        customerId:
+          type: number
+          format: int32
+          minimum: 100
+        message:
+          type: string
+        time:
+          type: string
+      required:
+      - customerId
+      - message
+      - time
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string

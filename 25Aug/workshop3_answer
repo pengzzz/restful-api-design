@@ -1,0 +1,127 @@
+------------------------------------------------------------
+Answer 1
+
+query {
+  viewer {
+    login
+    name
+    url
+    email
+  }
+}
+------------------------------------------------------------
+
+------------------------------------------------------------
+Answer 2
+
+query {
+  viewer {
+    login
+    repositories (first: 50, orderBy: {field: CREATED_AT, direction: DESC}) {
+      nodes {
+        name
+        url
+        forkCount
+        description
+      }
+    }
+  }
+}
+------------------------------------------------------------
+
+------------------------------------------------------------
+Answer 3
+
+query ($login:String!) {
+  user(login: $login) {
+    repositories (first: 50, orderBy: {field: PUSHED_AT, direction: DESC}) {
+      nodes {
+        name
+        url
+        forkCount
+        description
+        owner {
+          login
+        }
+      }
+    }
+  }
+}
+------------------------------------------------------------
+
+------------------------------------------------------------
+Answer 4
+
+query ($first:Int!, $query:String!) {
+  search (query: $query, first:$first, type: REPOSITORY) {
+    repositoryCount
+    edges {
+      node {
+        ... on Repository {
+          name
+          url
+          description
+        }
+      }
+    }
+  }
+}
+------------------------------------------------------------
+
+------------------------------------------------------------
+Answer 5
+
+query ($first:Int!, $query:String!, $type:SearchType!) {
+  search (query: $query, first:$first, type: $type) {
+    repositoryCount
+    edges {
+      node {
+        ... on Repository {
+          name
+          url
+          description
+        }
+        ... on Discussion {
+          author {
+            login
+          }
+          body
+          title
+        }
+      }
+    }
+  }
+}
+------------------------------------------------------------
+
+------------------------------------------------------------
+Answer 6
+
+mutation { 
+  createRepository (input: {name: "myrepo", visibility: PUBLIC}) {
+    repository {
+      id
+    }
+  }
+}
+
+mutation { 
+  createBranchProtectionRule (input: {repositoryId: "some id", pattern: "main", requiresApprovingReviews: true, requiredApprovingReviewCount: 2, allowsDeletions: false}) {
+    clientMutationId
+  }
+}
+
+------------------------------------------------------------
+
+------------------------------------------------------------
+Answer 7
+
+curl --location --request POST 'https://api.github.com/graphql' \
+--header 'Authorization: Bearer {token value}}' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "query": "query { viewer { repositories (first: 50, orderBy: {field: CREATED_AT, direction: DESC}) { nodes { name url forkCount description } } }}"
+}'
+------------------------------------------------------------
+
+
